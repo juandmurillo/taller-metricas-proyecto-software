@@ -1,0 +1,19 @@
+{
+  "total_issues": 5,
+  "closed_issues": 3,
+  "open_issues": 2,
+  "completion_rate_percent": 60.0,
+  "total_bugs": 1,
+  "open_bugs": 1,
+  "closed_bugs": 0,
+  "average_resolution_hours": 0.01,
+  "estimated_hours": 10.0,
+  "actual_hours": 10.0,
+  "estimated_cost_usd": 200.0,
+  "actual_cost_usd": 200.0,
+  "cost_variance_usd": 0.0,
+  "roi_percent": 200.0,
+  "velocity_story_points": 6.0,
+  "overdue_open_issues": 0,
+  "risk_level": "Medio"
+}

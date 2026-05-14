@@ -1,0 +1,54 @@
+name: Actualizar métricas del proyecto
+
+on:
+  # Se puede ejecutar manualmente desde la pestaña Actions de GitHub
+  workflow_dispatch:
+
+  # Se ejecuta automáticamente cuando ocurre cualquier cambio en los issues
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled]
+
+  # Programado: todos los lunes a las 12:00 UTC (formato cron)
+  schedule:
+    - cron: "0 12 * * 1"
+
+# Permisos que necesita el workflow
+permissions:
+  contents: write  # Para hacer git push con las métricas actualizadas
+  issues: read     # Para leer los issues con gh CLI
+
+jobs:
+  update-metrics:
+    runs-on: ubuntu-latest  # Máquina virtual en la nube de GitHub
+
+    steps:
+      # 1. Descarga el código del repositorio en la máquina virtual
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      # 2. Usa gh CLI para descargar todos los issues en JSON
+      - name: Descargar issues desde GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}  # Token automático de GitHub Actions
+        run: |
+          mkdir -p data
+          gh issue list \
+            --state all \
+            --limit 100 \
+            --json number,title,body,labels,state,createdAt,closedAt,updatedAt,url \
+            > data/issues.json
+
+      # 3. Ejecuta el script Python (Python 3 viene preinstalado en ubuntu-latest)
+      - name: Calcular métricas
+        run: python scripts/build_metrics.py
+
+      # 4. Hace commit y push con los archivos actualizados
+      - name: Guardar métricas generadas
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/issues.json docs/metrics.json
+          # El "|| echo" evita que el job falle si no hay cambios
+          git commit -m "chore: actualizar métricas automáticas" \
+            || echo "No hay cambios para confirmar"
+          git push

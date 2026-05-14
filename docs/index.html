@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard de Métricas del Proyecto</title>
+  <style>
+    /* Estilos generales del dashboard */
+    body { font-family: Arial, sans-serif; margin: 40px;
+           background: #f6f8fa; color: #24292f; }
+    h1   { margin-bottom: 10px; }
+
+    /* Grid responsivo: mínimo 220px por tarjeta, se ajusta automáticamente */
+    .grid { display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px; margin-top: 24px; }
+
+    /* Tarjeta individual de métrica */
+    .card { background: white; border-radius: 12px; padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .card .label { font-size: 13px; color: #57606a; }
+    .card .value { font-size: 32px; font-weight: bold; margin-top: 8px; }
+
+    /* Color de riesgo dinámico */
+    .risk-alto   { color: #cf222e; }
+    .risk-medio  { color: #9a6700; }
+    .risk-bajo   { color: #1a7f37; }
+  </style>
+</head>
+<body>
+  <h1>Dashboard de Métricas del Proyecto</h1>
+  <p>Indicadores generados automáticamente desde GitHub Issues.</p>
+  <div class="grid" id="metrics"></div>
+
+  <script>
+    // Mapeo de claves del JSON a etiquetas legibles en español
+    const labels = {
+      total_issues:             "Total de tareas",
+      closed_issues:            "Tareas cerradas",
+      open_issues:              "Tareas abiertas",
+      completion_rate_percent:  "Avance (%)",
+      total_bugs:               "Bugs totales",
+      open_bugs:                "Bugs abiertos",
+      average_resolution_hours: "Tiempo promedio resolución (h)",
+      estimated_hours:          "Horas estimadas",
+      actual_hours:             "Horas reales",
+      estimated_cost_usd:       "Costo estimado (USD)",
+      actual_cost_usd:          "Costo real (USD)",
+      cost_variance_usd:        "Variación de costo (USD)",
+      roi_percent:              "ROI (%)",
+      velocity_story_points:    "Velocity (story points)",
+      overdue_open_issues:      "Tareas vencidas",
+      risk_level:               "Nivel de riesgo"
+    };
+
+    // Carga el archivo metrics.json y construye las tarjetas dinámicamente
+    fetch("metrics.json")
+      .then(r => r.json())
+      .then(data => {
+        const container = document.getElementById("metrics");
+        Object.entries(labels).forEach(([key, label]) => {
+          const card = document.createElement("div");
+          card.className = "card";
+          let val = data[key];
+          // Agrega clase de color para el nivel de riesgo
+          let riskClass = key === "risk_level"
+            ? `risk-${val.toLowerCase()}` : "";
+          card.innerHTML = `
+            <div class="label">${label}</div>
+            <div class="value ${riskClass}">${val}</div>
+          `;
+          container.appendChild(card);
+        });
+      });
+  </script>
+</body>
+</html>

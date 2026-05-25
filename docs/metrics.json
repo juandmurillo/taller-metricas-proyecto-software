@@ -14,6 +14,6 @@
   "cost_variance_usd": 0.0,
   "roi_percent": 200.0,
   "velocity_story_points": 6.0,
-  "overdue_open_issues": 0,
-  "risk_level": "Medio"
+  "overdue_open_issues": 2,
+  "risk_level": "Alto"
 }
